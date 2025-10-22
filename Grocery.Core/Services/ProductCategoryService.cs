@@ -1,5 +1,4 @@
-﻿
-using Grocery.Core.Interfaces.Repositories;
+﻿using Grocery.Core.Interfaces.Repositories;
 using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
 
@@ -7,40 +6,56 @@ namespace Grocery.Core.Services
 {
     public class ProductCategoryService : IProductCategoryService
     {
-        private readonly IProductCategoryRepository _productCategoriesRepository;
+        private readonly IProductCategoryRepository _productCategoryRepository;
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
 
-        public ProductCategoryService(IProductCategoryRepository productCategoriesRepository, IProductRepository productRepository, ICategoryRepository categoryRepository)
+        public ProductCategoryService(IProductCategoryRepository productCategoryRepository, IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
-            _productCategoriesRepository = productCategoriesRepository;
+            _productCategoryRepository = productCategoryRepository;
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
-            FillService();
-        }
-
-        private void FillService()
-        {
-            foreach (ProductCategory pc in _productCategoriesRepository.GetAll())
-            {
-                pc.Product = _productRepository.Get(pc.ProductId) ?? new(0, "", 0);
-                pc.Category = _categoryRepository.Get(pc.CategoryId) ?? new(0, "");
-            }
-        }
-        public ProductCategory Add(ProductCategory item)
-        {
-            _productCategoriesRepository.Add(item);
-            return item;
         }
 
         public List<ProductCategory> GetAll()
         {
-            return _productCategoriesRepository.GetAll();
+            return _productCategoryRepository.GetAll();
         }
 
-        public List<ProductCategory> GetAllOnCategoryId(int id)
+        public List<ProductCategory> GetAllOnCategoryId(int categoryId)
         {
-            return _productCategoriesRepository.GetAll().Where(p => p.CategoryId == id).ToList();
+            List<ProductCategory> productCategories = _productCategoryRepository.GetAllOnCategoryId(categoryId);
+            FillService(productCategories);
+            return productCategories;
+        }
+
+        public ProductCategory? Get(int id)
+        {
+            return _productCategoryRepository.Get(id);
+        }
+
+        public ProductCategory Add(ProductCategory item)
+        {
+            return _productCategoryRepository.Add(item);
+        }
+
+        public ProductCategory? Update(ProductCategory item)
+        {
+            return _productCategoryRepository.Update(item);
+        }
+
+        public ProductCategory? Delete(ProductCategory item)
+        {
+            return _productCategoryRepository.Delete(item);
+        }
+
+        private void FillService(List<ProductCategory> productCategories)
+        {
+            foreach (ProductCategory pc in productCategories)
+            {
+                pc.Product = _productRepository.Get(pc.ProductId) ?? new(0, "", 0);
+                pc.Category = _categoryRepository.Get(pc.CategoryId) ?? new(0, "");
+            }
         }
     }
 }

@@ -11,10 +11,12 @@ namespace Grocery.App
             Routing.RegisterRoute(nameof(ProductView), typeof(ProductView));
             Routing.RegisterRoute(nameof(ChangeColorView), typeof(ChangeColorView));
             Routing.RegisterRoute("Login", typeof(LoginView));
+            Routing.RegisterRoute(nameof(RegisterView), typeof(RegisterView));
             Routing.RegisterRoute(nameof(BestSellingProductsView), typeof(BestSellingProductsView));
             Routing.RegisterRoute(nameof(BoughtProductsView), typeof(BoughtProductsView));
             Routing.RegisterRoute(nameof(CategoriesView), typeof(CategoriesView));
             Routing.RegisterRoute(nameof(ProductCategoriesView), typeof(ProductCategoriesView));
+            Routing.RegisterRoute(nameof(NewProductView), typeof(NewProductView));
         }
     }
 }

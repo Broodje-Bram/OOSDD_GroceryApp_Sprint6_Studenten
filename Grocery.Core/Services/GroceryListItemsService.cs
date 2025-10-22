@@ -24,19 +24,9 @@ namespace Grocery.Core.Services
 
         public List<GroceryListItem> GetAllOnGroceryListId(int groceryListId)
         {
-            List<GroceryListItem> groceryListItems = _groceriesRepository.GetAll().Where(g => g.GroceryListId == groceryListId).ToList();
+            List<GroceryListItem> groceryListItems = _groceriesRepository.GetAllOnGroceryListId(groceryListId);
             FillService(groceryListItems);
             return groceryListItems;
-        }
-
-        public GroceryListItem Add(GroceryListItem item)
-        {
-            return _groceriesRepository.Add(item);
-        }
-
-        public GroceryListItem? Delete(GroceryListItem item)
-        {
-            throw new NotImplementedException();
         }
 
         public GroceryListItem? Get(int id)
@@ -44,36 +34,64 @@ namespace Grocery.Core.Services
             return _groceriesRepository.Get(id);
         }
 
+        public GroceryListItem Add(GroceryListItem item)
+        {
+            return _groceriesRepository.Add(item);
+        }
+
         public GroceryListItem? Update(GroceryListItem item)
         {
-            return _groceriesRepository.Update(item); 
+            return _groceriesRepository.Update(item);
+        }
+
+        public GroceryListItem? Delete(GroceryListItem item)
+        {
+            return _groceriesRepository.Delete(item);
+        }
+
+        public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
+        {
+            Dictionary<int, BestSellingProducts> bestSellingProducts = [];
+            List<BestSellingProducts> bestSellingProductsList = [];
+
+            foreach (GroceryListItem groceryListItem in GetAll())
+            {
+                if (bestSellingProducts.TryGetValue(groceryListItem.Product.Id, out BestSellingProducts? bestSellingProduct))
+                {
+                    bestSellingProduct.NrOfSells += groceryListItem.Amount;
+                }
+                else
+                {
+                    bestSellingProduct = new BestSellingProducts(
+                        productId: groceryListItem.Product.Id,
+                        name: groceryListItem.Product.Name,
+                        stock: groceryListItem.Product.Stock,
+                        nrOfSells: groceryListItem.Amount,
+                        ranking: -1
+                    );
+                    bestSellingProducts.Add(groceryListItem.Product.Id, bestSellingProduct);
+                }
+            }
+
+            List<BestSellingProducts> bestSellingProductsSortedList = [.. bestSellingProducts.Values];
+            bestSellingProductsSortedList.Sort((a, b) => b.NrOfSells.CompareTo(a.NrOfSells));
+
+            for (int i = 0; i < bestSellingProductsSortedList.Count; i++)
+            {
+                bestSellingProductsSortedList[i].Ranking = i + 1;
+                bestSellingProductsList.Add(bestSellingProductsSortedList[i]);
+                if (i >= topX) break;
+            }
+
+            return bestSellingProductsList;
         }
 
         private void FillService(List<GroceryListItem> groceryListItems)
         {
             foreach (GroceryListItem g in groceryListItems)
             {
-                g.Product = _productRepository.Get(g.ProductId) ?? new(0, "", 0);
+                g.Product = _productRepository.Get(g.ProductId) ?? new(0, "", 0, 0.00m);
             }
-        }
-
-        public List<BestSellingProducts> GetBestSellingProducts(int topX = 5)
-        {
-            Dictionary<Product, int> productCount = [];
-            GetAll().ForEach(g =>
-            {
-                if (productCount.ContainsKey(g.Product)) productCount[g.Product] += g.Amount;
-                else productCount[g.Product] = 1;
-            });
-            var products = (from entry in productCount orderby entry.Value descending select entry).Take(topX);
-            List<BestSellingProducts> bestProducts = [];
-            int ranking = 0;
-            foreach (var p in products)
-            {
-                ranking++;
-                bestProducts.Add(new(p.Key.Id, p.Key.Name, p.Key.Stock, p.Value, ranking));
-            }
-            return bestProducts;
         }
     }
 }

@@ -2,10 +2,8 @@
 
 namespace Grocery.Core.Interfaces.Repositories
 {
-    public interface IProductCategoryRepository
+    public interface IProductCategoryRepository : IRepository<ProductCategory>
     {
-        public ProductCategory Add(ProductCategory item);
-
-        public List<ProductCategory> GetAll();
+        public List<ProductCategory> GetAllOnCategoryId(int id);
     }
 }

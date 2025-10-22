@@ -1,5 +1,4 @@
-﻿
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
@@ -13,50 +12,82 @@ namespace Grocery.App.ViewModels
         private readonly IProductCategoryService _productCategoryService;
         private readonly IProductService _productService;
         private string searchText = "";
-        public ObservableCollection<ProductCategory> ProductCategories { get; set; } = [];
+
+        public ObservableCollection<ProductCategory> MyProductCategories { get; set; } = [];
         public ObservableCollection<Product> AvailableProducts { get; set; } = [];
 
         [ObservableProperty]
-        Category category;
-
+        Category category = new(0, "");
 
         public ProductCategoriesViewModel(IProductCategoryService productCategoryService, IProductService productService)
         {
             _productCategoryService = productCategoryService;
             _productService = productService;
+            Load(category.Id);
         }
 
-        partial void OnCategoryChanged(Category? oldValue, Category newValue)
+        private void Load(int id)
         {
-            ProductCategories.Clear();
-            foreach (var p in _productCategoryService.GetAllOnCategoryId(newValue.Id)) ProductCategories.Add(p);
+            MyProductCategories.Clear();
+            foreach (var item in _productCategoryService.GetAllOnCategoryId(id)) MyProductCategories.Add(item);
             GetAvailableProducts();
         }
 
         private void GetAvailableProducts()
         {
+            //Maak de lijst AvailableProducts leeg
             AvailableProducts.Clear();
-            foreach (Product p in _productService.GetAll())
-                if (ProductCategories.FirstOrDefault(pc => pc.ProductId == p.Id) == null)
-                    if (searchText=="" || p.Name.Contains(searchText)) AvailableProducts.Add(p);
 
+            List<int> groceryProductIdList = [];
+            foreach (var item in MyProductCategories)
+                groceryProductIdList.Add(item.ProductId);
+
+            //Haal de lijst met producten op
+            foreach (Product product in _productService.GetAll())
+            {
+                //Controleer of het product al op de boodschappenlijst staat, zo niet zet het in de AvailableProducts lijst
+                if (!groceryProductIdList.Contains(product.Id))
+                {
+                    if (string.IsNullOrEmpty(searchText) || product.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                        AvailableProducts.Add(product);
+                }
+            }
+        }
+
+        partial void OnCategoryChanged(Category? oldValue, Category newValue)
+        {
+            Load(newValue.Id);
         }
 
         [RelayCommand]
         public void AddProduct(Product product)
         {
-            if (product == null) return;
-            ProductCategory item = new(0, Category.Id, product.Id);
-            item.Product = product;
-            item.Category = Category;
+            if (product is null || product.Id <= 0) return;
+            ProductCategory item = new(0, product.Id, Category.Id)
+            {
+                Product = product,
+                Category = Category
+            };
             _productCategoryService.Add(item);
             AvailableProducts.Remove(product);
             OnCategoryChanged(null, Category);
         }
 
         [RelayCommand]
+        public void RemoveProduct(int productCategoryId)
+        {
+            ProductCategory? item = _productCategoryService.Get(productCategoryId);
+            if (item is null || item.Id <= 0) return;
+            _productCategoryService.Delete(item);
+            Product? product = _productService.Get(item.ProductId);
+            if (product is not null) AvailableProducts.Add(product);
+            OnCategoryChanged(null, Category);
+        }
+
+        [RelayCommand]
         public void PerformSearch(string searchText)
         {
+            if (Category is null || MyProductCategories is null) return;
             this.searchText = searchText;
             GetAvailableProducts();
         }

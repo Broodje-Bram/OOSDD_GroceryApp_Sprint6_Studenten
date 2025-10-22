@@ -8,5 +8,5 @@ public partial class ProductCategoriesView : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = viewModel;
-	}
+    }
 }

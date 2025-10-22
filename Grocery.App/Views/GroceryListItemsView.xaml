@@ -60,7 +60,11 @@
 
         <Border Grid.Row="1" Grid.Column="1" Stroke="#C49B33" StrokeThickness="4" Padding="5" Margin="5" HorizontalOptions="Center">
             <StackLayout>
-                <SearchBar x:Name="searchBar" SearchCommand="{Binding PerformSearchCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
+                <SearchBar Placeholder="Zoek product..."
+                    x:Name="searchBar"
+                    SearchCommand="{Binding PerformSearchCommand}"
+                    SearchCommandParameter="{Binding Text, x:DataType='SearchBar', Source={RelativeSource Self}}"
+                />
                 <CollectionView ItemsSource="{Binding AvailableProducts}" Margin="5" WidthRequest="300" HorizontalOptions="Start"
                     SelectionMode="Single"
                     SelectionChangedCommand="{Binding AddProductCommand}"
@@ -74,9 +78,11 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Column="0" Text="{Binding Name}" VerticalOptions="Center"/>
                                 <Label Grid.Column="1" Text="{Binding Stock}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                                <Label Grid.Column="2" Text="{Binding Price, StringFormat='€{0:F2}'}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

@@ -2,18 +2,18 @@ using Grocery.App.ViewModels;
 
 namespace Grocery.App.Views;
 
-public partial class BestSellingProductsView : ContentPage
+public partial class NewProductView : ContentPage
 {
-    public BestSellingProductsView(BestSellingProductsViewModel viewModel)
-    {
-        InitializeComponent();
-        BindingContext = viewModel;
+	public NewProductView(NewProductViewModel viewModel)
+	{
+		InitializeComponent();
+		BindingContext = viewModel;
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        if (BindingContext is BestSellingProductsViewModel bindingContext)
+        if (BindingContext is NewProductViewModel bindingContext)
         {
             bindingContext.OnAppearing();
         }
@@ -22,7 +22,7 @@ public partial class BestSellingProductsView : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        if (BindingContext is BestSellingProductsViewModel bindingContext)
+        if (BindingContext is NewProductViewModel bindingContext)
         {
             bindingContext.OnDisappearing();
         }

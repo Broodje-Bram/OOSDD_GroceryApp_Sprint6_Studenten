@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:m="clr-namespace:Grocery.Core.Models;assembly=Grocery.Core"
              xmlns:vm="clr-namespace:Grocery.App.ViewModels"
+             xmlns:m="clr-namespace:Grocery.Core.Models;assembly=Grocery.Core"
              x:Class="Grocery.App.Views.ProductCategoriesView"
              x:DataType="vm:ProductCategoriesViewModel"
              Title="ProductCategoriesView">
@@ -21,8 +21,8 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="1" Grid.Column="0"  Stroke="#C49B33" StrokeThickness="4" Padding="10" Margin="10" HorizontalOptions="Center">
-            <CollectionView ItemsSource="{Binding ProductCategories}" Margin="20" HorizontalOptions="Center" >
+        <Border Grid.Row="1" Grid.Column="0" Stroke="#C49B33" StrokeThickness="4" Padding="10" Margin="10" HorizontalOptions="Center">
+            <CollectionView ItemsSource="{Binding MyProductCategories}" Margin="20" HorizontalOptions="Center" EmptyView="De categorie is nog leeg. Voeg producten toe!">
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
                 </CollectionView.ItemsLayout>
@@ -31,6 +31,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.5*"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Text="Id" FontAttributes="Bold" HorizontalOptions="End" Margin="0,0,10,0"/>
                         <Label Grid.Column="1" Text="Naam" FontAttributes="Bold"/>
@@ -42,9 +43,16 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="0.5*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Text="{Binding ProductId}" HorizontalOptions="End" Margin="0,0,10,0"/>
-                            <Label Grid.Column="1" Text="{Binding Product.Name}"/>
+                            <Label Grid.Column="1" Text="{Binding Product.Name}" VerticalOptions="Center"/>
+                            <Grid Grid.Column="2">
+                                <Image Source="min.png" WidthRequest="15" HeightRequest="15"/>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProductCategoriesViewModel}}, Path=RemoveProductCommand}" CommandParameter="{Binding Id}" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -53,11 +61,15 @@
 
         <Border Grid.Row="1" Grid.Column="1" Stroke="#C49B33" StrokeThickness="4" Padding="5" Margin="5" HorizontalOptions="Center">
             <StackLayout>
-                <SearchBar x:Name="searchBar" SearchCommand="{Binding PerformSearchCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
-                <CollectionView ItemsSource="{Binding AvailableProducts}" Margin="5" HorizontalOptions="Start"
-                SelectionMode="Single"
-                SelectionChangedCommand="{Binding AddProductCommand}"
-                SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}">
+                <SearchBar Placeholder="Zoek product..."
+                    x:Name="searchBar"
+                    SearchCommand="{Binding PerformSearchCommand}"
+                    SearchCommandParameter="{Binding Text, x:DataType='SearchBar', Source={RelativeSource Self}}"
+                />
+                <CollectionView ItemsSource="{Binding AvailableProducts}" Margin="5" WidthRequest="300" HorizontalOptions="Start"
+                    SelectionMode="Single"
+                    SelectionChangedCommand="{Binding AddProductCommand}"
+                    SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
@@ -69,7 +81,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Column="0" Text="{Binding Name}" VerticalOptions="Center"/>
-                                <Label Grid.Column="1" Text="{Binding Stock}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                                <Label Grid.Column="1" Text="{Binding Price, StringFormat='€{0:F2}'}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

@@ -4,11 +4,11 @@
              x:Class="Grocery.App.Views.GroceryListsView"
              xmlns:vm="clr-namespace:Grocery.App.ViewModels"
              xmlns:m="clr-namespace:Grocery.Core.Models;assembly=Grocery.Core"
-             x:DataType="vm:GroceryListViewModel"
+             x:DataType="vm:GroceryListsViewModel"
              Title="GroceryListsView">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{Binding Client.Name}" Command="{Binding ShowBoughtProductsCommand}"/>
+        <ToolbarItem Text="{Binding _global.Client.Name}" Command="{Binding ShowBoughtProductsCommand}"/>
     </ContentPage.ToolbarItems>
 
     <Shell.TitleView>

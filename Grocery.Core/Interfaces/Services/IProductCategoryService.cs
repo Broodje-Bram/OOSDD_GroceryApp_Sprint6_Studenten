@@ -1,14 +1,9 @@
-﻿
-using Grocery.Core.Models;
+﻿using Grocery.Core.Models;
 
 namespace Grocery.Core.Interfaces.Services
 {
-    public interface IProductCategoryService
+    public interface IProductCategoryService : IService<ProductCategory>
     {
-        public ProductCategory Add(ProductCategory item);
-
-        public List<ProductCategory> GetAll();
-
-        public List<ProductCategory> GetAllOnCategoryId(int id);
+        public List<ProductCategory> GetAllOnCategoryId(int categoryId);
     }
 }

@@ -2,12 +2,13 @@
 {
     public class ProductCategory : Model
     {
-        public int CategoryId { get; set; }
         public int ProductId { get; set; }
-        public ProductCategory(int id, int categoryId, int productId) : base(id, "")
+        public int CategoryId { get; set; }
+
+        public ProductCategory(int id, int productId, int categoryId) : base(id, "")
         {
-            CategoryId = categoryId;
             ProductId = productId;
+            CategoryId = categoryId;
         }
 
         public Product? Product { get; set; }

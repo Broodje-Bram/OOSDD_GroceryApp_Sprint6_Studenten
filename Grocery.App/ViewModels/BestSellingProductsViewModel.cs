@@ -18,12 +18,15 @@ namespace Grocery.App.ViewModels
         public override void Load()
         {
             Products.Clear();
-            foreach (var item in _groceryListItemsService.GetBestSellingProducts()) Products.Add(item);
+            foreach (BestSellingProducts item in _groceryListItemsService.GetBestSellingProducts())
+            {
+                Products.Add(item);
+            }
         }
 
         public override void OnAppearing()
         {
-            Load();  
+            Load();
         }
 
         public override void OnDisappearing()
